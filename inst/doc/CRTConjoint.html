@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Using CRTConjoint</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+  code{white-space: pre-wrap;}
+  span.smallcaps{font-variant: small-caps;}
+  span.underline{text-decoration: underline;}
+  div.column{display: inline-block; vertical-align: top; width: 50%;}
+  div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+  ul.task-list{list-style: none;}
+    </style>
+
+
+
+<style type="text/css">
+  code {
+    white-space: pre;
+  }
+  .sourceCode {
+    overflow: visible;
+  }
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    for (var j = 0; j < rules.length; j++) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") continue;
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') continue;
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Using CRTConjoint</h1>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(CRTConjoint)</span></code></pre></div>
+<p>This vignette will go through examples cases listed in the package
+for all the main functions with details on how to use the inputs.
+Finally, the last section contains detailed steps on how to use
+CRTConjoint with the Amazon Web Services computing cluster.</p>
+<div id="understanding-crt_pval" class="section level2">
+<h2>Understanding CRT_pval</h2>
+<p>To begin, we start with understanding the main function
+<code>CRT_pval</code>. All examples use the immigration choice conjoint
+experiment data from Hainmueller et. al. (2014). We first load this data
+from the package.</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(<span class="st">&quot;immigrationdata&quot;</span>)</span></code></pre></div>
+<p>Each row consists a pair of immigrant candidates that were shown to
+respondents. For example, the first row shows that the left immigrant
+candidate was a Male from Iraq who had a high school degree while the
+right immigrant candidate was a Female from France with no formal
+education. The respondent who evaluated this task was a 20 year old
+college educated White Male, who voted for the left immigrant
+candidate.</p>
+<p>In the first example, we aim to understand if the candidate’s
+education matters for immigration preferences. To test this,
+<code>CRT_pval</code> requires users to specify all factors and
+respondent factors of interest in the <code>formula</code> input along
+with the binary response. <code>CRT_pval</code> requires us to
+additionally specify which of the factors are the left and right
+profiles.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>form <span class="ot">=</span> <span class="fu">formula</span>(<span class="st">&quot;Y ~ FeatEd + FeatGender + FeatCountry + FeatReason + FeatJob +</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="st">FeatExp + FeatPlans + FeatTrips + FeatLang + ppage + ppeducat + ppethm + ppgender&quot;</span>)</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>left <span class="ot">=</span> <span class="fu">colnames</span>(immigrationdata)[<span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>right <span class="ot">=</span> <span class="fu">colnames</span>(immigrationdata)[<span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>]</span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>left; right</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;FeatEd&quot;      &quot;FeatGender&quot;  &quot;FeatCountry&quot; &quot;FeatReason&quot;  &quot;FeatJob&quot;    </span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [6] &quot;FeatExp&quot;     &quot;FeatPlans&quot;   &quot;FeatTrips&quot;   &quot;FeatLang&quot;</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [1] &quot;FeatEd_2&quot;      &quot;FeatGender_2&quot;  &quot;FeatCountry_2&quot; &quot;FeatReason_2&quot; </span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [5] &quot;FeatJob_2&quot;     &quot;FeatExp_2&quot;     &quot;FeatPlans_2&quot;   &quot;FeatTrips_2&quot;  </span></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a><span class="co">#&gt; [9] &quot;FeatLang_2&quot;</span></span></code></pre></div>
+<p>Users can see that the left and right profile factors are aligned,
+i.e., the first entry is the education for both the left and right
+profiles. It is important that they are expected to be aligned. We also
+note that the formula only contains the factors for the left profile.
+This is sufficient as the algorithm will take the left and right input
+to use both left and right profile attributes for testing the
+hypothesis. Lastly, we include all respondent characteristics (ppage,
+ppeducat, etc.) to boost power. We are ready to now run
+<code>CRT_pval</code> to test whether education matters.</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>education_test <span class="ot">=</span> <span class="fu">CRT_pval</span>(<span class="at">formula =</span> form, <span class="at">data =</span> immigrationdata, <span class="at">X =</span> <span class="st">&quot;FeatEd&quot;</span>,</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a> <span class="at">left =</span> left, <span class="at">right =</span> right, <span class="at">non_factor =</span> <span class="st">&quot;ppage&quot;</span>, <span class="at">B =</span> <span class="dv">100</span>, <span class="at">analysis =</span> <span class="dv">2</span>)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>education_test<span class="sc">$</span>p_val</span></code></pre></div>
+<p>We again note <code>X = &quot;FeatEd&quot;</code> is sufficient to clarify
+which factor we are testing for. Because the function assumes all
+attributes in conjoint experiments are of class factor, if there are
+variables that are not factor class, for example respondent age (ppage),
+the function must know which are these non-factor variables.
+Furthermore, to save time we only run it for <span class="math inline">\(B = 100\)</span> resamples. Lastly, we set <span class="math inline">\(analysis = 2\)</span> to also allow the function
+to spit out two of the strongest interactions that contributed to the
+observed test statistic. We note that this is purely for exploratory
+purposes.</p>
+<p>The output should contain not only the <span class="math inline">\(p\)</span>-value but also the observed test
+statistic, all the resampled test statistic, etc. The function will also
+show a progress bar to show the percentage of resamples the user is
+finished with.</p>
+<div id="using-constrained-randomization-design" class="section level3">
+<h3>Using constrained randomization design</h3>
+<p>Since the immigrant’s education was uniformly sampled, we did not
+need to specify the design because the default design was uniform.
+However, there are some factors that used more complex design. One such
+factor was job (FeatJob). For this experiment, the candidate’s
+occupation could only be financial analyst, computer programmer,
+research scientist, and doctor if their education degree was equivalent
+to at least some level of college. Because this constrained uniform
+design is popular in conjoint experiments, we allow the function to
+account for this design so long as the user specifies the constraints.
+We now show, using the same example, how to specify this constraint.</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>constraint_randomization <span class="ot">=</span> <span class="fu">list</span>() <span class="co"># (Job has dependent randomization scheme)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>constraint_randomization[[<span class="st">&quot;FeatJob&quot;</span>]] <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Financial analyst&quot;</span>,<span class="st">&quot;Computer programmer&quot;</span>,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="st">&quot;Research scientist&quot;</span>,<span class="st">&quot;Doctor&quot;</span>)</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>constraint_randomization[[<span class="st">&quot;FeatEd&quot;</span>]] <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;Equivalent to completing two years of</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="st">college in the US&quot;</span>, <span class="st">&quot;Equivalent to completing a graduate degree in the US&quot;</span>,</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a> <span class="st">&quot;Equivalent to completing a college degree in the US&quot;</span>)</span></code></pre></div>
+<p>The <code>constraint_randomization</code> list is a list of length
+two. The first element contains the levels of job that can only be
+randomized with certain levels of education. The second element of the
+list contains the levels of education that allows the aforementioned
+jobs to have positive probability. The listed levels are assumed to
+match the levels in the supplied data. Additionally, the names of the
+list is also assumed to match the column names in the supplied data. We
+note that the user only has to supply the constraint for either the left
+or right factor and the function will assume the constraint
+randomization scheme is the same for both left and right factors, i.e.,
+same for FeatJob_2 and FeatEd_2.</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>job_test <span class="ot">=</span> <span class="fu">CRT_pval</span>(<span class="at">formula =</span> form, <span class="at">data =</span> immigrationdata, <span class="at">X =</span> <span class="st">&quot;FeatJob&quot;</span>,</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a><span class="at">left =</span> left, <span class="at">right =</span> right, <span class="at">design =</span> <span class="st">&quot;Constrained Uniform&quot;</span>,</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="at">constraint_randomization =</span> constraint_randomization, <span class="at">non_factor =</span> <span class="st">&quot;ppage&quot;</span>, <span class="at">B =</span> <span class="dv">100</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>job_test<span class="sc">$</span>p_val</span></code></pre></div>
+<p>Once, we have the constraint list, we input it into the
+<code>constraint_randomization</code> input, after stating that the
+<code>design = &quot;Constrained Uniform&quot;</code>. We supply other examples
+when a user has a nonuniform (but no constraints) design and how to
+force a variable to include as an interaction in the examples.</p>
+</div>
+</div>
+<div id="understanding-extensions-of-crt" class="section level2">
+<h2>Understanding extensions of CRT</h2>
+<p>We provide three other CRT functions that take similar inputs but
+tests regularity conditions often invoked in conjoint experiments. The
+first aims to test the profile order effect
+(<code>CRT_profileordereffect</code>), i.e., whether or not being in the
+left or right has any impact on the response. The syntax for such a test
+is straightforward.</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>profileorder_test <span class="ot">=</span> <span class="fu">CRT_profileordereffect</span>(<span class="at">formula =</span> form, <span class="at">data =</span> immigrationdata,</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a> <span class="at">left =</span> left, <span class="at">right =</span> right, <span class="at">B =</span> <span class="dv">100</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>profileorder_test<span class="sc">$</span>p_val</span></code></pre></div>
+<p>Testing the carryover effect and fatigue effect is slightly more
+complex. When testing the carryover effect, it requires resampling all
+the left and right factors. The default <code>design = &quot;Uniform&quot;</code>
+assumes that all factors were uniformly sampled. If that is not the
+case, (which the immigration example is not) we need to supply our own
+resamples. To do this, we build our resampling function,</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>resample_func_immigration <span class="ot">=</span> <span class="cf">function</span>(x, <span class="at">seed =</span> <span class="fu">sample</span>(<span class="fu">c</span>(<span class="dv">0</span>, <span class="dv">1000</span>), <span class="at">size =</span> <span class="dv">1</span>), left_idx, right_idx) {</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a> <span class="fu">set.seed</span>(seed)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a> df <span class="ot">=</span> x[, <span class="fu">c</span>(left_idx, right_idx)]</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a> variable <span class="ot">=</span> <span class="fu">colnames</span>(x)[<span class="fu">c</span>(left_idx, right_idx)]</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a> len <span class="ot">=</span> <span class="fu">length</span>(variable)</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a> resampled <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a> n <span class="ot">=</span> <span class="fu">nrow</span>(df)</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>len) {</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>   var <span class="ot">=</span> df[, variable[i]]</span>
+<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>   lev <span class="ot">=</span> <span class="fu">levels</span>(var)</span>
+<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>   resampled[[i]] <span class="ot">=</span> <span class="fu">factor</span>(<span class="fu">sample</span>(lev, <span class="at">size =</span> n, <span class="at">replace =</span> <span class="cn">TRUE</span>))</span>
+<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a> resampled_df <span class="ot">=</span> <span class="fu">data.frame</span>(resampled[[<span class="dv">1</span>]])</span>
+<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a> <span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">2</span><span class="sc">:</span>len) {</span>
+<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>   resampled_df <span class="ot">=</span> <span class="fu">cbind</span>(resampled_df, resampled[[i]])</span>
+<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a> }</span>
+<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a> <span class="fu">colnames</span>(resampled_df) <span class="ot">=</span> <span class="fu">colnames</span>(df)</span>
+<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a> <span class="co">#escape persecution was dependently randomized</span></span>
+<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a> country_1 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatCountry&quot;</span>]</span>
+<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a> country_2 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatCountry_2&quot;</span>]</span>
+<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a> i_1 <span class="ot">=</span> <span class="fu">which</span>((country_1 <span class="sc">==</span> <span class="st">&quot;Iraq&quot;</span> <span class="sc">|</span> country_1 <span class="sc">==</span> <span class="st">&quot;Sudan&quot;</span> <span class="sc">|</span> country_1 <span class="sc">==</span> <span class="st">&quot;Somalia&quot;</span>))</span>
+<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a> i_2 <span class="ot">=</span> <span class="fu">which</span>((country_2 <span class="sc">==</span> <span class="st">&quot;Iraq&quot;</span> <span class="sc">|</span> country_2 <span class="sc">==</span> <span class="st">&quot;Sudan&quot;</span> <span class="sc">|</span> country_2 <span class="sc">==</span> <span class="st">&quot;Somalia&quot;</span>))</span>
+<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a> reason_1 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatReason&quot;</span>]</span>
+<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a> reason_2 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatReason_2&quot;</span>]</span>
+<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a> levs <span class="ot">=</span> <span class="fu">levels</span>(reason_1)</span>
+<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a> r_levs <span class="ot">=</span> levs[<span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">3</span>)]</span>
+<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a> reason_1 <span class="ot">=</span> <span class="fu">sample</span>(r_levs, <span class="at">size =</span> n, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a> reason_1[i_1] <span class="ot">=</span> <span class="fu">sample</span>(levs, <span class="at">size =</span> <span class="fu">length</span>(i_1), <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a> reason_2 <span class="ot">=</span> <span class="fu">sample</span>(r_levs, <span class="at">size =</span> n, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-37"><a href="#cb8-37" aria-hidden="true" tabindex="-1"></a> reason_2[i_2] <span class="ot">=</span> <span class="fu">sample</span>(levs, <span class="at">size =</span> <span class="fu">length</span>(i_2), <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-38"><a href="#cb8-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-39"><a href="#cb8-39" aria-hidden="true" tabindex="-1"></a> resampled_df[, <span class="st">&quot;FeatReason&quot;</span>] <span class="ot">=</span> reason_1</span>
+<span id="cb8-40"><a href="#cb8-40" aria-hidden="true" tabindex="-1"></a> resampled_df[, <span class="st">&quot;FeatReason_2&quot;</span>] <span class="ot">=</span> reason_2</span>
+<span id="cb8-41"><a href="#cb8-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-42"><a href="#cb8-42" aria-hidden="true" tabindex="-1"></a> <span class="co">#profession high skill fix</span></span>
+<span id="cb8-43"><a href="#cb8-43" aria-hidden="true" tabindex="-1"></a> educ_1 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatEd&quot;</span>]</span>
+<span id="cb8-44"><a href="#cb8-44" aria-hidden="true" tabindex="-1"></a> educ_2 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatEd_2&quot;</span>]</span>
+<span id="cb8-45"><a href="#cb8-45" aria-hidden="true" tabindex="-1"></a> i_1 <span class="ot">=</span> <span class="fu">which</span>((educ_1 <span class="sc">==</span> <span class="st">&quot;Equivalent to completing two years of college in the US&quot;</span> <span class="sc">|</span></span>
+<span id="cb8-46"><a href="#cb8-46" aria-hidden="true" tabindex="-1"></a>  educ_1 <span class="sc">==</span> <span class="st">&quot;Equivalent to completing a college degree in the US&quot;</span> <span class="sc">|</span></span>
+<span id="cb8-47"><a href="#cb8-47" aria-hidden="true" tabindex="-1"></a>  educ_1 <span class="sc">==</span> <span class="st">&quot;Equivalent to completing a graduate degree in the US&quot;</span>))</span>
+<span id="cb8-48"><a href="#cb8-48" aria-hidden="true" tabindex="-1"></a> i_2 <span class="ot">=</span> <span class="fu">which</span>((educ_2 <span class="sc">==</span> <span class="st">&quot;Equivalent to completing two years of college in the US&quot;</span> <span class="sc">|</span></span>
+<span id="cb8-49"><a href="#cb8-49" aria-hidden="true" tabindex="-1"></a> educ_2 <span class="sc">==</span> <span class="st">&quot;Equivalent to completing a college degree in the US&quot;</span> <span class="sc">|</span></span>
+<span id="cb8-50"><a href="#cb8-50" aria-hidden="true" tabindex="-1"></a> educ_2 <span class="sc">==</span> <span class="st">&quot;Equivalent to completing a graduate degree in the US&quot;</span>))</span>
+<span id="cb8-51"><a href="#cb8-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-52"><a href="#cb8-52" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-53"><a href="#cb8-53" aria-hidden="true" tabindex="-1"></a> job_1 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatJob&quot;</span>]</span>
+<span id="cb8-54"><a href="#cb8-54" aria-hidden="true" tabindex="-1"></a> job_2 <span class="ot">=</span> resampled_df[, <span class="st">&quot;FeatJob_2&quot;</span>]</span>
+<span id="cb8-55"><a href="#cb8-55" aria-hidden="true" tabindex="-1"></a> levs <span class="ot">=</span> <span class="fu">levels</span>(job_1)</span>
+<span id="cb8-56"><a href="#cb8-56" aria-hidden="true" tabindex="-1"></a> <span class="co"># take out computer programmer, doctor, financial analyst, and research scientist</span></span>
+<span id="cb8-57"><a href="#cb8-57" aria-hidden="true" tabindex="-1"></a> r_levs <span class="ot">=</span> levs[<span class="sc">-</span><span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span>,<span class="dv">5</span>, <span class="dv">9</span>)]</span>
+<span id="cb8-58"><a href="#cb8-58" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-59"><a href="#cb8-59" aria-hidden="true" tabindex="-1"></a> job_1 <span class="ot">=</span> <span class="fu">sample</span>(r_levs, <span class="at">size =</span> n, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-60"><a href="#cb8-60" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-61"><a href="#cb8-61" aria-hidden="true" tabindex="-1"></a> job_1[i_1] <span class="ot">=</span> <span class="fu">sample</span>(levs, <span class="at">size =</span> <span class="fu">length</span>(i_1), <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-62"><a href="#cb8-62" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-63"><a href="#cb8-63" aria-hidden="true" tabindex="-1"></a> job_2 <span class="ot">=</span> <span class="fu">sample</span>(r_levs, <span class="at">size =</span> n, <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-64"><a href="#cb8-64" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-65"><a href="#cb8-65" aria-hidden="true" tabindex="-1"></a> job_2[i_2] <span class="ot">=</span> <span class="fu">sample</span>(levs, <span class="at">size =</span> <span class="fu">length</span>(i_2), <span class="at">replace =</span> <span class="cn">TRUE</span>)</span>
+<span id="cb8-66"><a href="#cb8-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-67"><a href="#cb8-67" aria-hidden="true" tabindex="-1"></a> resampled_df[, <span class="st">&quot;FeatJob&quot;</span>] <span class="ot">=</span> job_1</span>
+<span id="cb8-68"><a href="#cb8-68" aria-hidden="true" tabindex="-1"></a> resampled_df[, <span class="st">&quot;FeatJob_2&quot;</span>] <span class="ot">=</span> job_2</span>
+<span id="cb8-69"><a href="#cb8-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-70"><a href="#cb8-70" aria-hidden="true" tabindex="-1"></a> resampled_df[<span class="fu">colnames</span>(resampled_df)] <span class="ot">=</span> <span class="fu">lapply</span>(resampled_df[<span class="fu">colnames</span>(resampled_df)], factor )</span>
+<span id="cb8-71"><a href="#cb8-71" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-72"><a href="#cb8-72" aria-hidden="true" tabindex="-1"></a> <span class="fu">return</span>(resampled_df)</span>
+<span id="cb8-73"><a href="#cb8-73" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>This resampling function takes the data (x) as an input and given the
+indexes of the left and right profile attributes, it returns a
+completely new resampled dataframe of the same dimension as x. As stated
+above, because testing the carryover effect requires resampling all the
+attributes B times, we must supply all the manually resampled
+dataframes. To do this we store them in a list of length B, each
+containing a resampled data of all the left and right attributes. We
+store this in <code>own_resamples</code>.</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>carryover_df <span class="ot">=</span> immigrationdata</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>own_resamples <span class="ot">=</span> <span class="fu">list</span>()</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>B <span class="ot">=</span> <span class="dv">100</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="dv">1</span><span class="sc">:</span>B) {</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a> newdf <span class="ot">=</span> <span class="fu">resample_func_immigration</span>(carryover_df, <span class="at">left_idx =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">9</span>, <span class="at">right_idx =</span> <span class="dv">10</span><span class="sc">:</span><span class="dv">18</span>, <span class="at">seed =</span> i)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a> own_resamples[[i]] <span class="ot">=</span> newdf</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>}</span></code></pre></div>
+<p>Lastly, the carryover test requires a column that indicates the task
+evaluation number for each row. In the immigration experiment, each
+respondent rated five tasks and the data is sorted by each task, i.e.,
+the first five rows are the first five tasks for the first respondent.
+Consequently, we can define a new column, task, that iterates 1 to 5 and
+run the main function. NOTE: it is important that the task variable has
+no missing tasks, i.e., a respondent that only rated four tasks while
+all other respondents rated five tasks. If there is such a respondent,
+please drop it before using this function.</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a>J <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>carryover_df<span class="sc">$</span>task <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>J, <span class="fu">nrow</span>(carryover_df)<span class="sc">/</span>J)</span>
+<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>carryover_test <span class="ot">=</span> <span class="fu">CRT_carryovereffect</span>(<span class="at">formula =</span> form, <span class="at">data =</span> carryover_df, <span class="at">left =</span> left,</span>
+<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a><span class="at">right =</span> right, <span class="at">task =</span> <span class="st">&quot;task&quot;</span>, <span class="at">supplyown_resamples =</span> own_resamples, <span class="at">B =</span> B)</span>
+<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>carryover_test<span class="sc">$</span>p_val</span></code></pre></div>
+<p>Lastly, to test the fatigue effect, we only need to additionally
+specify the respondent index. Like the task column, we similarly repeat
+1 to 200 five times and store it in a new column called respondent.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>fatigue_df <span class="ot">=</span> immigrationdata</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>fatigue_df<span class="sc">$</span>task <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>J, <span class="fu">nrow</span>(fatigue_df)<span class="sc">/</span>J)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>fatigue_df<span class="sc">$</span>respondent <span class="ot">=</span> <span class="fu">rep</span>(<span class="dv">1</span><span class="sc">:</span>(<span class="fu">nrow</span>(fatigue_df)<span class="sc">/</span>J), <span class="at">each =</span> J)</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>fatigue_test <span class="ot">=</span> <span class="fu">CRT_fatigueeffect</span>(<span class="at">formula =</span> form, <span class="at">data =</span> fatigue_df, <span class="at">left =</span> left,</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a><span class="at">right =</span> right, <span class="at">task =</span> <span class="st">&quot;task&quot;</span>, <span class="at">respondent =</span> <span class="st">&quot;respondent&quot;</span>, <span class="at">B =</span> <span class="dv">100</span>)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>fatigue_test<span class="sc">$</span>p_val</span></code></pre></div>
+</div>
+<div id="using-crtconjoint-with-amazon-web-services" class="section level2">
+<h2>Using CRTConjoint with Amazon Web Services</h2>
+<p>An optional argument for all CRT functions in this package is the
+<code>num_cores</code> input. Currently it is set at 2 cores as the
+default. Although 2 cores may be sufficient for someone who is doing
+exploratory work with <span class="math inline">\(B = 100\)</span>, the
+final reported <span class="math inline">\(p\)</span>-values is
+recommended to have a much higher value of <span class="math inline">\(B\)</span>. A typical Mac laptop will only support
+up to <code>num_cores = 4</code>, which may be unsatisfactory for
+researchers. For researchers with their own computing cluster, this
+section is not applicable for them. However, for those with no easy
+access to computing cluster, we write this section to easily use our
+functions in powerful computing clusters provided by Amazon Web Services
+(AWS).</p>
+<p>We will leverage the RStudio Server in AWS maintained and provided
+by: <a href="https://www.louisaslett.com/RStudio_AMI/" class="uri">https://www.louisaslett.com/RStudio_AMI/</a>. We will now
+list the steps needed to use AWS Rstudio.</p>
+<ul>
+<li>Step 1) Sign up for an AWS account. Then login.</li>
+<li>Step 2) Go to the above link: <a href="https://www.louisaslett.com/RStudio_AMI/" class="uri">https://www.louisaslett.com/RStudio_AMI/</a> and click on
+the region closest to user’s local region. For example, we click on US
+East, Ohio ami-07038…</li>
+<li>Step 3) This will redirect you to a new page. Under instance type
+select the desired instance type. The number next to vCPU indicates the
+number of cores available. We recommend c5a.16xlarge with 64 cores.
+Please note that this costs 2.4 USD per hour. The user will be billed
+per hour. There are cheaper options.</li>
+<li>Step 4) After selecting instance type, scroll down to “Network
+settings”. Make sure “Allow SSH Traffic” is set to “Anywhere”. Also tick
+“Allow HTTP traffic from the internet”.</li>
+<li>Step 5) Press the “launch instance” orange button.</li>
+<li>Step 6) After being redirected, MANUALLY copy and paste the link
+below “Public IPv4 DNS”. Then paste it on a new tab on google chrome. DO
+NOT press the open address button as it does not work.</li>
+<li>Step 7) You will be prompted (might take a minute) to a RStudio
+login page. Username: rstudio and password is your instance ID.</li>
+<li>Step 8) You can now enjoy RStudio on this AWS server. Install
+CRTConjoint package set num_cores to the desired cores and run the CRT
+functions faster!</li>
+</ul>
+<p>We recommend that the user has already written all necessary code to
+run on the AWS. Since users will be charged hourly, it is recommended
+that they can directly run the code. If the user runs with 50 cores, the
+runtime for a typical conjoint experiment should not exceed more than
+5-10 minutes for a single <span class="math inline">\(p\)</span>-value
+with <span class="math inline">\(B = 2000\)</span>, thus we do not
+believe any user to have to incur much fees. For any questions please do
+not hesitate to contact me at: daewoongham at g dot harvard dot edu</p>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
